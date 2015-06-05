@@ -1,2 +1,3 @@
 # mbin
-plenty of more-or-less useful scripts I use(d)
+
+Based on @moul's mbin.
