@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+while [ true ]
+do
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$1
+    sleep 1
+done
