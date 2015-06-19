@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+#
+# Hi there.
+
+function green {
+    echo -e "\033[0;32m$@\033[0m"
+}
+
+function red {
+    echo -e "\033[0;31m$@\033[0m"
+}
+
+function headline {
+    echo -e "\033[1;32m$@\033[0m"
+}
+
+function section {
+    echo ""
+    green $1
+    echo ""
+}
+
+function tool {
+    echo -e "\033[1;35m$1\033[0m$2"
+}
+
+function item {
+    echo -e "- $@"
+}
+
+function text {
+    echo $@
+}
+
+function man {
+    headline	"Hi there, I'm here to help you investigate issues on Linux systems."
+
+    section	"USAGE"
+    tool	"quest          " "this help"
+    tool	"quest install  " "install investigation tools (Ubuntu)"
+    tool	"quest memo     " "help about a particular topic"
+
+    section	"GENERAL WORKFLOW"
+    item	"use general tools to have a rough idea of the situation"
+    item	"once you think there's an issue, caracterize it (disk I/Os? Net? CPU?)"
+    item	"investigate using specialized tools"
+
+    section	"GENERAL TOOLS"
+    tool	"uptime         " "load average"
+    tool	"htop           " "what's happening"
+    tool	"strace         " "trace syscalls"
+
+    section	"NETWORKING TOOLS"
+    tool	"ethool         " "list/manipulate hw"
+    tool	"iftop          " "traffic per interface"
+    tool	"nethogs        " "traffic per process"
+}
+
+function memo_cpu {
+    headline	"Hi again, here are some ideas to investigate what's going on the CPU."
+
+    section	"Load Average"
+    text	"The load average is the average number of processes running and waiting (for CPU, disk, network I/O)."
+    text	""
+    item	"use 'uptime' to get the load average"
+    item	"use 'nproc' to know the number of CPUs on the system"
+
+    section	"CPU times (top/htop)"
+    item	"us = user CPU time, the process is doing stuff in userland"
+    item	"id = idle CPU time, the process is sleeping"
+    item	"wa = I/O wait time, the process is waiting for resources"
+    text	""
+    text	"If wa is high, this process is likely to be I/O bound."
+    text	"Conversely, if us is high, the process is likely to be CPU bound."
+}
+
+function install {
+    section "UPDATE"
+    sudo apt-get update
+
+    section "GENERAL"
+    sudo apt-get install -q -y \
+	htop \
+	strace
+}
+
+function main {
+    case $1 in
+	"install")
+	    install
+	    exit
+	    ;;
+
+	"memo")
+	    case $2 in
+		"cpu")
+		    memo_cpu
+		    exit
+		    ;;
+
+		*)
+		    red "usage: $0 memo TOPIC"
+		    section "AVAILABLE TOPICS"
+		    exit
+		    ;;
+	    esac
+	    exit
+	    ;;
+	
+	*)
+	    man
+	    exit
+	    ;;
+    esac
+}
+
+main $@ | less -R
