@@ -54,6 +54,9 @@ function man {
     tool	"ethool         " "list/manipulate hw"
     tool	"iftop          " "traffic per interface"
     tool	"nethogs        " "traffic per process"
+
+    section	"CPU TOOLS"
+    tool	"mpstat         " "real-time information about CPU and cores"
 }
 
 function memo_cpu {
@@ -64,8 +67,9 @@ function memo_cpu {
     text	""
     item	"use 'uptime' to get the load average"
     item	"use 'nproc' to know the number of CPUs on the system"
+    item	"use 'mpstat -P ALL' to get global CPU usage and per-core CPU usages."
 
-    section	"CPU times (top/htop)"
+    section	"CPU times (top/htop/mpstat)"
     item	"us = user CPU time, the process is doing stuff in userland"
     item	"id = idle CPU time, the process is sleeping"
     item	"wa = I/O wait time, the process is waiting for resources"
