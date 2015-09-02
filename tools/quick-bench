@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+# A script to quickly benchmark a node, like a client.
+
+export DEBIAN_FRONTEND=noninteractive
+export MYSQL_DUMMY_PASSWORD=IAmNotAPassword
+
+function setup {
+    (
+	apt-get install -q -y htop sysbench mysql-server
+	mysqladmin -u root password $MYSQL_DUMMY_PASSWORD
+	echo "CREATE DATABASE checks;" | mysql -uroot -p$MYSQL_DUMMY_PASSWORD
+    ) &> /dev/null
+}
+
+function bench_cpu {
+    cat <<EOF
+ ######  ########  ##     ## 
+##    ## ##     ## ##     ## 
+##       ##     ## ##     ## 
+##       ########  ##     ## 
+##       ##        ##     ## 
+##    ## ##        ##     ## 
+ ######  ##         #######  
+
+
+EOF
+
+    sysbench --test=cpu run
+}
+
+function bench_read_mem {
+    cat <<EOF
+##     ## ######## ##     ##    ########  ########    ###    ########  
+###   ### ##       ###   ###    ##     ## ##         ## ##   ##     ## 
+#### #### ##       #### ####    ##     ## ##        ##   ##  ##     ## 
+## ### ## ######   ## ### ##    ########  ######   ##     ## ##     ## 
+##     ## ##       ##     ##    ##   ##   ##       ######### ##     ## 
+##     ## ##       ##     ##    ##    ##  ##       ##     ## ##     ## 
+##     ## ######## ##     ##    ##     ## ######## ##     ## ########  
+
+
+EOF
+
+    sysbench --test=memory run
+}
+
+function bench_write_mem {
+    cat <<EOF
+##     ## ######## ##     ##    ##      ## ########  #### ######## ######## 
+###   ### ##       ###   ###    ##  ##  ## ##     ##  ##     ##    ##       
+#### #### ##       #### ####    ##  ##  ## ##     ##  ##     ##    ##       
+## ### ## ######   ## ### ##    ##  ##  ## ########   ##     ##    ######   
+##     ## ##       ##     ##    ##  ##  ## ##   ##    ##     ##    ##       
+##     ## ##       ##     ##    ##  ##  ## ##    ##   ##     ##    ##       
+##     ## ######## ##     ##     ###  ###  ##     ## ####    ##    ######## 
+
+
+EOF
+
+    sysbench --test=memory --memory-oper=write run
+}
+
+function bench_io {
+    cat <<EOF
+####  #######  
+ ##  ##     ## 
+ ##  ##     ## 
+ ##  ##     ## 
+ ##  ##     ## 
+ ##  ##     ## 
+####  #######  
+
+
+EOF
+    sysbench --test=fileio --file-total-size=4G prepare
+    sysbench --test=fileio --file-total-size=4G --file-test-mode=rndrw run
+    sysbench --test=fileio --file-total-size=4G cleanup
+}
+
+function bench_mysql {
+    cat <<EOF
+##     ## ##    ##  ######   #######  ##       
+###   ###  ##  ##  ##    ## ##     ## ##       
+#### ####   ####   ##       ##     ## ##       
+## ### ##    ##     ######  ##     ## ##       
+##     ##    ##          ## ##  ## ## ##       
+##     ##    ##    ##    ## ##    ##  ##       
+##     ##    ##     ######   ##### ## ######## 
+
+
+EOF
+
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD prepare
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD run
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD cleanup
+}
+
+setup
+bench_cpu
+bench_read_mem
+bench_write_mem
+bench_io
+bench_mysql
