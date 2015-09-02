@@ -26,7 +26,7 @@ function bench_cpu {
 
 EOF
 
-    sysbench --test=cpu run
+    sysbench --test=cpu run --num-threads=$(nproc)
 }
 
 function bench_read_mem {
