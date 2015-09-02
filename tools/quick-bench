@@ -91,9 +91,9 @@ function bench_mysql {
 
 EOF
 
-    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD prepare
-    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD run
-    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD cleanup
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD prepare --num-threads=$(nproc)
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD run --num-threads=$(nproc)
+    sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=checks --mysql-user=root --mysql-password=$MYSQL_DUMMY_PASSWORD cleanup --num-threads=$(nproc)
 }
 
 setup
