@@ -6,11 +6,9 @@ export DEBIAN_FRONTEND=noninteractive
 export MYSQL_DUMMY_PASSWORD=IAmNotAPassword
 
 function setup {
-    (
-	apt-get install -q -y htop sysbench mysql-server
-	mysqladmin -u root password $MYSQL_DUMMY_PASSWORD
-	echo "CREATE DATABASE checks;" | mysql -uroot -p$MYSQL_DUMMY_PASSWORD
-    ) &> /dev/null
+    apt-get install -q -y htop sysbench mysql-server
+    mysqladmin -u root password $MYSQL_DUMMY_PASSWORD
+    echo "CREATE DATABASE checks;" | mysql -uroot -p$MYSQL_DUMMY_PASSWORD
 }
 
 function bench_cpu {
